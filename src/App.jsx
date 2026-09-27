@@ -10,6 +10,10 @@ import {
   Loader2,
   Sparkles,
   Cloudy,
+  Send,
+  Bot,
+  User,
+  Mic,
 } from "lucide-react";
 
 const weatherData = {
@@ -63,22 +67,170 @@ const weatherData = {
   },
 };
 
+const indianStatesAndCities = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Tirupati", "Nellore", "Kadapa"],
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tezu", "Changlang"],
+  Assam: ["Guwahati", "Silchar", "Dibrugarh", "Nagaon", "Tezpur"],
+  Bihar: ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Darbhanga"],
+  Chhattisgarh: ["Raipur", "Bilaspur", "Durg", "Rajnandgaon", "Jagdalpur"],
+  Goa: ["Panaji", "Margao", "Vasco da Gama", "Ponda", "Bicholim"],
+  Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
+  Haryana: ["Faridabad", "Gurgaon", "Hisar", "Rohtak", "Panipat"],
+  Himachal Pradesh: ["Shimla", "Mandi", "Solan", "Kangra", "Kullu"],
+  Jharkhand: ["Ranchi", "Dhanbad", "Giridih", "Bokaro", "Jamshedpur"],
+  Karnataka: ["Bangalore", "Mysore", "Mangalore", "Hubli", "Belgaum"],
+  Kerala: ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kottayam", "Kannur"],
+  Madhya Pradesh: ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain"],
+  Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
+  Manipur: ["Imphal", "Bishnupur", "Thoubal", "Churachandpur", "Ukhrul"],
+  Meghalaya: ["Shillong", "Tura", "Nongpoh", "Cherrapunji", "Baghmara"],
+  Mizoram: ["Aizawl", "Lunglei", "Saiha", "Champhai", "Serchhip"],
+  Nagaland: ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha"],
+  Odisha: ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Balasore"],
+  Punjab: ["Chandigarh", "Amritsar", "Ludhiana", "Jalandhar", "Patiala"],
+  Rajasthan: ["Jaipur", "Jodhpur", "Udaipur", "Ajmer", "Bikaner"],
+  Sikkim: ["Gangtok", "Pelling", "Namchi", "Gyalshing", "Mangan"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Salem", "Tiruchirappalli"],
+  Telangana: ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam"],
+  Tripura: ["Agartala", "Udaipur", "Ambassa", "Kailashahar", "Dharmanagar"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Meerut"],
+  Uttarakhand: ["Dehradun", "Nainital", "Rishikesh", "Haridwar", "Almora"],
+  "West Bengal": ["Kolkata", "Darjeeling", "Siliguri", "Asansol", "Durgapur"],
+  "Delhi": ["New Delhi", "Dwarka", "Rohini", "Noida", "Gurgaon"],
+};
+
+const aiResponses = {
+  greeting: [
+    "Hello! 👋 I'm your Weather GPT Assistant. I can help you with weather forecasts for any Indian city or state. What location interests you?",
+    "Namaste! 🙏 Welcome to Weather GPT. I'm here to provide detailed weather insights and forecasts for Indian cities. Where would you like to know about?",
+  ],
+  weather_query: [
+    "The weather in {city} is currently {condition}. It's {temp}°C with {humidity}% humidity. {advice}",
+    "According to our latest data, {city} is experiencing {condition} weather with a temperature of {temp}°C. {advice}",
+  ],
+  location_suggestion: [
+    "Popular cities in {state} include: {cities}. Which one would you like to check?",
+    "Did you know? {state} has wonderful cities like {cities}. Would you like weather for any of these?",
+  ],
+};
+
 const presets = [
-  { city: "New York", type: "clear" },
-  { city: "London", type: "rain" },
-  { city: "Tokyo", type: "cloudy" },
-  { city: "Paris", type: "mist" },
+  { city: "Mumbai", state: "Maharashtra", type: "clear" },
+  { city: "Delhi", state: "Delhi", type: "rain" },
+  { city: "Bangalore", state: "Karnataka", type: "cloudy" },
+  { city: "Shimla", state: "Himachal Pradesh", type: "mist" },
 ];
 
 function App() {
   const [city, setCity] = useState("Delhi");
   const [selectedType, setSelectedType] = useState("clear");
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      text: "Hello! 👋 I'm your Weather GPT Assistant. I can help you with weather forecasts for any Indian city or state. What location interests you?",
+      sender: "ai",
+      timestamp: new Date(),
+    },
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [selectedState, setSelectedState] = useState("");
 
   const weather = useMemo(() => {
     return weatherData[selectedType] || weatherData.clear;
   }, [selectedType]);
 
   const Icon = weather.icon;
+
+  const handleSendMessage = () => {
+    if (inputValue.trim() === "") return;
+
+    const userMessage = {
+      id: messages.length + 1,
+      text: inputValue,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setMessages([...messages, userMessage]);
+
+    // Simulate AI response
+    setTimeout(() => {
+      let aiResponse = "";
+
+      const lowerInput = inputValue.toLowerCase();
+
+      // Check for state queries
+      const matchedState = Object.keys(indianStatesAndCities).find(
+        (state) => lowerInput.includes(state.toLowerCase())
+      );
+
+      if (matchedState) {
+        setSelectedState(matchedState);
+        const cities = indianStatesAndCities[matchedState].join(", ");
+        aiResponse = `Great! ${matchedState} is a beautiful state. Popular cities there include: ${cities}. Which one would you like to explore?`;
+      }
+      // Check for city queries
+      else if (lowerInput.includes("weather") || lowerInput.includes("temperature")) {
+        const weatherAdvice = [
+          "Stay hydrated! 💧 Consider using sunscreen and light clothing.",
+          "Perfect weather for outdoor activities! 🌤️",
+          "Keep an umbrella handy and stay indoors if possible. ☔",
+          "Misty weather - beautiful views but reduced visibility! 🌫️",
+        ];
+        aiResponse = `The weather in ${city} is currently ${weather.condition}. Temperature is ${weather.temp}°C. ${weatherAdvice[Math.floor(Math.random() * weatherAdvice.length)]}`;
+        setCity(inputValue.split(" ")[0] || city);
+      } else if (lowerInput.includes("hello") || lowerInput.includes("hi")) {
+        aiResponse = "Hello! 👋 How can I assist you with weather information today?";
+      } else if (lowerInput.includes("help")) {
+        aiResponse = "I can help you with:\n• Weather forecasts for Indian cities\n• State and city information\n• Temperature and humidity details\n• Weather-based recommendations\n\nJust ask about any city in India!";
+      } else {
+        const randomResponses = [
+          `Interesting question! Let me check the weather for ${inputValue}. Currently showing data for ${city}.`,
+          "That's a great query! 🌤️ Would you like detailed weather information for a specific city?",
+          "I'm here to help with weather forecasts across India. Feel free to ask about any Indian city!",
+        ];
+        aiResponse = randomResponses[Math.floor(Math.random() * randomResponses.length)];
+      }
+
+      const aiMsg = {
+        id: messages.length + 2,
+        text: aiResponse,
+        sender: "ai",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, aiMsg]);
+    }, 600);
+
+    setInputValue("");
+  };
+
+  const handleStateSelection = (state) => {
+    setSelectedState(state);
+    const firstCity = indianStatesAndCities[state][0];
+    setCity(firstCity);
+  };
+
+  const handleCitySelection = (cityName) => {
+    setCity(cityName);
+    const userMsg = {
+      id: messages.length + 1,
+      text: `Show me weather for ${cityName}`,
+      sender: "user",
+      timestamp: new Date(),
+    };
+    setMessages([...messages, userMsg]);
+
+    setTimeout(() => {
+      const aiMsg = {
+        id: messages.length + 2,
+        text: `The weather in ${cityName} is currently ${weather.condition}. Temperature: ${weather.temp}°C, Humidity: 68%, Wind: 18 km/h. ${weather.description}`,
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    }, 600);
+  };
 
   return (
     <div
@@ -105,33 +257,34 @@ function App() {
           </button>
         </header>
 
-        <section className="grid flex-1 gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-          <div
-            className={`relative overflow-hidden rounded-[30px] border ${weather.card} shadow-2xl ${weather.gradientGlow} backdrop-blur-xl`}
-          >
-            <div className="absolute inset-0 bg-white/5" />
-            <div className="relative p-6 sm:p-8 lg:p-10">
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/10">
-                      <MapPin className="h-6 w-6" />
+        <section className="grid flex-1 gap-6 xl:grid-cols-[1fr_1.2fr]">
+          {/* Left Panel - Weather Dashboard */}
+          <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-150px)]">
+            <div
+              className={`relative overflow-hidden rounded-[30px] border ${weather.card} shadow-2xl ${weather.gradientGlow} backdrop-blur-xl`}
+            >
+              <div className="absolute inset-0 bg-white/5" />
+              <div className="relative p-6 sm:p-8">
+                <div className="flex flex-col gap-8">
+                  <div className="flex flex-col gap-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/10">
+                        <MapPin className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.2em] text-white/70">
+                          Live location
+                        </p>
+                        <h2 className="text-2xl font-bold">{city}</h2>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm uppercase tracking-[0.2em] text-white/70">
-                        Live location
-                      </p>
-                      <h2 className="text-2xl font-bold">{city}</h2>
+
+                    <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md w-fit">
+                      <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,1)]" />
+                      <span className="text-sm text-white/90">Updated just now</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md">
-                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,1)]" />
-                    <span className="text-sm text-white/90">Updated just now</span>
-                  </div>
-                </div>
-
-                <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
                   <div className="space-y-5">
                     <div className="flex items-center gap-4">
                       <div className={`rounded-[28px] bg-gradient-to-br ${weather.accent} p-4 shadow-lg`}>
@@ -156,9 +309,12 @@ function App() {
                       {presets.map((preset) => (
                         <button
                           key={preset.city}
-                          onClick={() => setSelectedType(preset.type)}
+                          onClick={() => {
+                            setCity(preset.city);
+                            setSelectedType(preset.type);
+                          }}
                           className={`rounded-full border px-4 py-2 text-sm transition ${
-                            selectedType === preset.type
+                            city === preset.city
                               ? "border-white/50 bg-white/20"
                               : "border-white/20 bg-white/5 hover:bg-white/10"
                           }`}
@@ -168,95 +324,155 @@ function App() {
                       ))}
                     </div>
                   </div>
-
-                  <div className="flex flex-col justify-between gap-4 rounded-[28px] border border-white/15 bg-black/10 p-5 backdrop-blur-md">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm uppercase tracking-[0.2em] text-white/60">
-                        Forecast
-                      </p>
-                      <Loader2 className="h-4 w-4 animate-spin text-white/70" />
-                    </div>
-
-                    <div className="space-y-4">
-                      {[
-                        { label: "Humidity", value: "68%", icon: Droplets },
-                        { label: "Wind", value: "18 km/h", icon: Wind },
-                        { label: "Air Pressure", value: "1013 hPa", icon: Gauge },
-                      ].map(({ label, value, icon: IconItem }) => (
-                        <div
-                          key={label}
-                          className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
-                              <IconItem className="h-4 w-4" />
-                            </div>
-                            <span className="text-sm text-white/80">{label}</span>
-                          </div>
-                          <span className="text-sm font-semibold">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <aside className="space-y-6">
-            <div className="rounded-[28px] border border-white/15 bg-white/10 p-5 shadow-xl backdrop-blur-xl">
-              <p className="mb-4 text-sm uppercase tracking-[0.22em] text-white/70">
-                Search city
-              </p>
+            {/* Forecast Details */}
+            <div className="rounded-[28px] border border-white/15 bg-black/10 p-5 shadow-xl backdrop-blur-md">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-white/60">
+                  Current Forecast
+                </p>
+                <Loader2 className="h-4 w-4 animate-spin text-white/70" />
+              </div>
 
               <div className="space-y-4">
-                <input
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Enter city name"
-                  className="w-full rounded-2xl border border-white/15 bg-black/10 px-4 py-3 text-base text-white placeholder:text-white/40 outline-none ring-0 transition focus:border-white/40"
-                />
-
-                <button
-                  onClick={() => {
-                    if (city.toLowerCase().includes("rain")) setSelectedType("rain");
-                    else if (city.toLowerCase().includes("sun")) setSelectedType("clear");
-                    else if (city.toLowerCase().includes("cloud")) setSelectedType("cloudy");
-                    else if (city.toLowerCase().includes("fog")) setSelectedType("mist");
-                    else setSelectedType("clear");
-                  }}
-                  className="w-full rounded-2xl bg-white/20 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/25"
-                >
-                  Check weather
-                </button>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-white/15 bg-black/10 p-5 shadow-xl backdrop-blur-xl">
-              <p className="mb-4 text-sm uppercase tracking-[0.22em] text-white/70">
-                This afternoon
-              </p>
-
-              <div className="space-y-3">
                 {[
-                  { time: "12:00", temp: "32°", label: "Hot" },
-                  { time: "15:00", temp: "34°", label: "Peak heat" },
-                  { time: "18:00", temp: "29°", label: "Cooler" },
-                ].map((slot) => (
+                  { label: "Humidity", value: "68%", icon: Droplets },
+                  { label: "Wind", value: "18 km/h", icon: Wind },
+                  { label: "Air Pressure", value: "1013 hPa", icon: Gauge },
+                ].map(({ label, value, icon: IconItem }) => (
                   <div
-                    key={slot.time}
-                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-3 py-3"
+                    key={label}
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
                   >
-                    <div>
-                      <p className="text-sm text-white/60">{slot.time}</p>
-                      <p className="text-sm font-medium text-white/90">{slot.label}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+                        <IconItem className="h-4 w-4" />
+                      </div>
+                      <span className="text-sm text-white/80">{label}</span>
                     </div>
-                    <p className="text-lg font-bold">{slot.temp}</p>
+                    <span className="text-sm font-semibold">{value}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </aside>
+          </div>
+
+          {/* Right Panel - AI Chat */}
+          <div className="rounded-[30px] border border-white/15 bg-black/20 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col max-h-[calc(100vh-150px)]">
+            <div className="bg-gradient-to-r from-white/10 to-white/5 p-4 border-b border-white/15 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500">
+                <Bot className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">Weather AI Assistant</p>
+                <p className="text-xs text-white/60">Always available for weather queries</p>
+              </div>
+            </div>
+
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex gap-3 animate-fade-in ${
+                    msg.sender === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {msg.sender === "ai" && (
+                    <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500">
+                      <Bot className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-xs rounded-2xl px-4 py-3 ${
+                      msg.sender === "user"
+                        ? "bg-white/20 border border-white/30 text-white"
+                        : "bg-white/10 border border-white/20 text-white/90"
+                    }`}
+                  >
+                    <p className="text-sm leading-6 break-words">{msg.text}</p>
+                    <p className="text-xs text-white/50 mt-1">
+                      {msg.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  {msg.sender === "user" && (
+                    <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-pink-500">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* States Quick Access */}
+            {!selectedState && (
+              <div className="border-t border-white/15 bg-white/5 p-3">
+                <p className="text-xs uppercase tracking-widest text-white/60 mb-3">Quick States</p>
+                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                  {Object.keys(indianStatesAndCities)
+                    .slice(0, 8)
+                    .map((state) => (
+                      <button
+                        key={state}
+                        onClick={() => handleStateSelection(state)}
+                        className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs text-white/80 transition"
+                      >
+                        {state}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Cities Quick Access */}
+            {selectedState && (
+              <div className="border-t border-white/15 bg-white/5 p-3">
+                <p className="text-xs uppercase tracking-widest text-white/60 mb-3">
+                  Cities in {selectedState}
+                </p>
+                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                  {indianStatesAndCities[selectedState].map((cityName) => (
+                    <button
+                      key={cityName}
+                      onClick={() => handleCitySelection(cityName)}
+                      className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs text-white/80 transition"
+                    >
+                      {cityName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Input Area */}
+            <div className="border-t border-white/15 bg-white/5 p-4">
+              <div className="flex gap-3">
+                <input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Ask about weather in any Indian city..."
+                  className="flex-1 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none transition focus:border-white/40"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-lg transition"
+                >
+                  <Send className="h-5 w-5 text-white" />
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
     </div>
