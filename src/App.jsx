@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import {
   CloudRain,
   SunMedium,
-  CloudSun,
   CloudFog,
   Wind,
   MapPin,
@@ -10,7 +9,6 @@ import {
   Gauge,
   LoaderCircle,
   Sparkles,
-  MoonStar,
   Cloudy,
 } from "lucide-react";
 
@@ -86,7 +84,7 @@ function App() {
     <div
       className={`min-h-screen overflow-hidden bg-gradient-to-br ${weather.bg} text-white transition-all duration-700`}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),transparent_35%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),transparent_35%)]" />
 
       <main className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-6 flex items-center justify-between">
