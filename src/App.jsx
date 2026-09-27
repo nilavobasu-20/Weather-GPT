@@ -13,7 +13,6 @@ import {
   Send,
   Bot,
   User,
-  Mic,
 } from "lucide-react";
 
 const weatherData = {
@@ -76,11 +75,11 @@ const indianStatesAndCities = {
   Goa: ["Panaji", "Margao", "Vasco da Gama", "Ponda", "Bicholim"],
   Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
   Haryana: ["Faridabad", "Gurgaon", "Hisar", "Rohtak", "Panipat"],
-  Himachal Pradesh: ["Shimla", "Mandi", "Solan", "Kangra", "Kullu"],
+  "Himachal Pradesh": ["Shimla", "Mandi", "Solan", "Kangra", "Kullu"],
   Jharkhand: ["Ranchi", "Dhanbad", "Giridih", "Bokaro", "Jamshedpur"],
   Karnataka: ["Bangalore", "Mysore", "Mangalore", "Hubli", "Belgaum"],
   Kerala: ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kottayam", "Kannur"],
-  Madhya Pradesh: ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain"],
+  "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain"],
   Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
   Manipur: ["Imphal", "Bishnupur", "Thoubal", "Churachandpur", "Ukhrul"],
   Meghalaya: ["Shillong", "Tura", "Nongpoh", "Cherrapunji", "Baghmara"],
@@ -96,22 +95,7 @@ const indianStatesAndCities = {
   "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Meerut"],
   Uttarakhand: ["Dehradun", "Nainital", "Rishikesh", "Haridwar", "Almora"],
   "West Bengal": ["Kolkata", "Darjeeling", "Siliguri", "Asansol", "Durgapur"],
-  "Delhi": ["New Delhi", "Dwarka", "Rohini", "Noida", "Gurgaon"],
-};
-
-const aiResponses = {
-  greeting: [
-    "Hello! 👋 I'm your Weather GPT Assistant. I can help you with weather forecasts for any Indian city or state. What location interests you?",
-    "Namaste! 🙏 Welcome to Weather GPT. I'm here to provide detailed weather insights and forecasts for Indian cities. Where would you like to know about?",
-  ],
-  weather_query: [
-    "The weather in {city} is currently {condition}. It's {temp}°C with {humidity}% humidity. {advice}",
-    "According to our latest data, {city} is experiencing {condition} weather with a temperature of {temp}°C. {advice}",
-  ],
-  location_suggestion: [
-    "Popular cities in {state} include: {cities}. Which one would you like to check?",
-    "Did you know? {state} has wonderful cities like {cities}. Would you like weather for any of these?",
-  ],
+  Delhi: ["New Delhi", "Dwarka", "Rohini", "Noida", "Gurgaon"],
 };
 
 const presets = [
@@ -151,26 +135,21 @@ function App() {
       timestamp: new Date(),
     };
 
-    setMessages([...messages, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
 
-    // Simulate AI response
+    const lowerInput = inputValue.toLowerCase();
+    const matchedState = Object.keys(indianStatesAndCities).find((state) =>
+      lowerInput.includes(state.toLowerCase())
+    );
+
     setTimeout(() => {
       let aiResponse = "";
-
-      const lowerInput = inputValue.toLowerCase();
-
-      // Check for state queries
-      const matchedState = Object.keys(indianStatesAndCities).find(
-        (state) => lowerInput.includes(state.toLowerCase())
-      );
 
       if (matchedState) {
         setSelectedState(matchedState);
         const cities = indianStatesAndCities[matchedState].join(", ");
         aiResponse = `Great! ${matchedState} is a beautiful state. Popular cities there include: ${cities}. Which one would you like to explore?`;
-      }
-      // Check for city queries
-      else if (lowerInput.includes("weather") || lowerInput.includes("temperature")) {
+      } else if (lowerInput.includes("weather") || lowerInput.includes("temperature")) {
         const weatherAdvice = [
           "Stay hydrated! 💧 Consider using sunscreen and light clothing.",
           "Perfect weather for outdoor activities! 🌤️",
@@ -178,7 +157,6 @@ function App() {
           "Misty weather - beautiful views but reduced visibility! 🌫️",
         ];
         aiResponse = `The weather in ${city} is currently ${weather.condition}. Temperature is ${weather.temp}°C. ${weatherAdvice[Math.floor(Math.random() * weatherAdvice.length)]}`;
-        setCity(inputValue.split(" ")[0] || city);
       } else if (lowerInput.includes("hello") || lowerInput.includes("hi")) {
         aiResponse = "Hello! 👋 How can I assist you with weather information today?";
       } else if (lowerInput.includes("help")) {
@@ -193,7 +171,7 @@ function App() {
       }
 
       const aiMsg = {
-        id: messages.length + 2,
+        id: Date.now(),
         text: aiResponse,
         sender: "ai",
         timestamp: new Date(),
@@ -212,18 +190,18 @@ function App() {
   };
 
   const handleCitySelection = (cityName) => {
-    setCity(cityName);
     const userMsg = {
-      id: messages.length + 1,
+      id: Date.now(),
       text: `Show me weather for ${cityName}`,
       sender: "user",
       timestamp: new Date(),
     };
-    setMessages([...messages, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
+    setCity(cityName);
 
     setTimeout(() => {
       const aiMsg = {
-        id: messages.length + 2,
+        id: Date.now() + 1,
         text: `The weather in ${cityName} is currently ${weather.condition}. Temperature: ${weather.temp}°C, Humidity: 68%, Wind: 18 km/h. ${weather.description}`,
         sender: "ai",
         timestamp: new Date(),
@@ -258,7 +236,6 @@ function App() {
         </header>
 
         <section className="grid flex-1 gap-6 xl:grid-cols-[1fr_1.2fr]">
-          {/* Left Panel - Weather Dashboard */}
           <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-150px)]">
             <div
               className={`relative overflow-hidden rounded-[30px] border ${weather.card} shadow-2xl ${weather.gradientGlow} backdrop-blur-xl`}
@@ -328,7 +305,6 @@ function App() {
               </div>
             </div>
 
-            {/* Forecast Details */}
             <div className="rounded-[28px] border border-white/15 bg-black/10 p-5 shadow-xl backdrop-blur-md">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm uppercase tracking-[0.2em] text-white/60">
@@ -360,7 +336,6 @@ function App() {
             </div>
           </div>
 
-          {/* Right Panel - AI Chat */}
           <div className="rounded-[30px] border border-white/15 bg-black/20 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col max-h-[calc(100vh-150px)]">
             <div className="bg-gradient-to-r from-white/10 to-white/5 p-4 border-b border-white/15 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500">
@@ -372,7 +347,6 @@ function App() {
               </div>
             </div>
 
-            {/* Messages Container */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
               {messages.map((msg) => (
                 <div
@@ -410,7 +384,6 @@ function App() {
               ))}
             </div>
 
-            {/* States Quick Access */}
             {!selectedState && (
               <div className="border-t border-white/15 bg-white/5 p-3">
                 <p className="text-xs uppercase tracking-widest text-white/60 mb-3">Quick States</p>
@@ -430,7 +403,6 @@ function App() {
               </div>
             )}
 
-            {/* Cities Quick Access */}
             {selectedState && (
               <div className="border-t border-white/15 bg-white/5 p-3">
                 <p className="text-xs uppercase tracking-widest text-white/60 mb-3">
@@ -450,7 +422,6 @@ function App() {
               </div>
             )}
 
-            {/* Input Area */}
             <div className="border-t border-white/15 bg-white/5 p-4">
               <div className="flex gap-3">
                 <input
