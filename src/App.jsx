@@ -7,7 +7,7 @@ import {
   MapPin,
   Droplets,
   Gauge,
-  LoaderCircle,
+  Loader2,
   Sparkles,
   Cloudy,
 } from "lucide-react";
@@ -174,7 +174,7 @@ function App() {
                       <p className="text-sm uppercase tracking-[0.2em] text-white/60">
                         Forecast
                       </p>
-                      <LoaderCircle className="h-4 w-4 animate-spin text-white/70" />
+                      <Loader2 className="h-4 w-4 animate-spin text-white/70" />
                     </div>
 
                     <div className="space-y-4">
