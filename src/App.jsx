@@ -21,7 +21,7 @@ const weatherData = {
     condition: "Very Hot",
     summary: "Sunny and blazing",
     accent: "from-orange-500 via-amber-400 to-yellow-200",
-    bg: "from-orange-500/80 via-amber-400/70 to-yellow-200/80",
+    bg: "from-orange-600/90 via-amber-500/85 to-yellow-300/80",
     card: "bg-white/15 border-white/20",
     ring: "ring-orange-300/60",
     icon: SunMedium,
@@ -33,7 +33,7 @@ const weatherData = {
     condition: "Raining",
     summary: "Cool and wet",
     accent: "from-sky-600 via-cyan-500 to-slate-300",
-    bg: "from-sky-700/90 via-cyan-600/80 to-slate-800/90",
+    bg: "from-slate-800/95 via-slate-700/90 to-sky-600/85",
     card: "bg-slate-900/20 border-sky-200/20",
     ring: "ring-sky-300/40",
     icon: CloudRain,
@@ -44,25 +44,25 @@ const weatherData = {
     temp: 26,
     condition: "Cloudy",
     summary: "Soft skies",
-    accent: "from-slate-500 via-slate-400 to-sky-200",
-    bg: "from-slate-600/80 via-slate-500/70 to-sky-200/60",
+    accent: "from-gray-400 via-blue-300 to-indigo-200",
+    bg: "from-gray-500/85 via-blue-400/75 to-indigo-300/70",
     card: "bg-slate-200/10 border-slate-100/20",
     ring: "ring-slate-300/40",
     icon: Cloudy,
-    description: "Clouds are covering the sun, making the day feel mild and comfortable.",
-    gradientGlow: "shadow-slate-500/30",
+    description: "Puffy clouds cover the sky. A pleasant day with gentle winds.",
+    gradientGlow: "shadow-blue-400/30",
   },
   mist: {
-    temp: 24,
+    temp: 18,
     condition: "Misty",
-    summary: "Moody air",
-    accent: "from-slate-400 via-zinc-300 to-neutral-200",
-    bg: "from-slate-500/80 via-zinc-500/70 to-neutral-300/60",
-    card: "bg-neutral-100/10 border-white/10",
-    ring: "ring-neutral-300/40",
+    summary: "Foggy air",
+    accent: "from-emerald-500 via-teal-400 to-cyan-300",
+    bg: "from-teal-800/95 via-emerald-700/90 to-cyan-600/85",
+    card: "bg-cyan-100/10 border-white/10",
+    ring: "ring-cyan-300/40",
     icon: CloudFog,
-    description: "Visibility is reduced and the air feels cool and humid.",
-    gradientGlow: "shadow-zinc-500/30",
+    description: "Thick mist reduces visibility. Serene and cool atmosphere.",
+    gradientGlow: "shadow-teal-600/30",
   },
 };
 
@@ -104,6 +104,78 @@ const presets = [
   { city: "Bangalore", state: "Karnataka", type: "cloudy" },
   { city: "Shimla", state: "Himachal Pradesh", type: "mist" },
 ];
+
+function AnimatedBackground({ type }) {
+  if (type === "clear") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 via-amber-500/85 to-yellow-300/80" />
+        <div className="absolute top-20 left-20 w-72 h-72 bg-orange-400/30 rounded-full floating-orb blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-400/20 rounded-full floating-orb-reverse blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-amber-300/25 rounded-full floating-orb-slow blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.3),transparent_30%)]" />
+      </>
+    );
+  }
+
+  if (type === "rain") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-800/95 via-slate-700/90 to-sky-600/85" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(51,65,85,0.4),transparent_50%)]" />
+        <div className="absolute top-0 left-0 w-full h-full">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="rain-drop absolute w-1 h-16 bg-gradient-to-b from-cyan-300/60 to-cyan-400/20 blur-sm"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 0.8}s`,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute top-10 right-20 w-64 h-64 bg-slate-600/40 rounded-full floating-orb blur-3xl" />
+      </>
+    );
+  }
+
+  if (type === "cloudy") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-500/85 via-blue-400/75 to-indigo-300/70" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.2),transparent_40%)]" />
+        <div className="absolute top-10 left-10 w-80 h-40 bg-white/20 rounded-full floating-orb blur-3xl" />
+        <div className="absolute top-1/3 right-20 w-96 h-48 bg-indigo-300/30 rounded-full floating-orb-reverse blur-3xl" />
+        <div className="absolute bottom-20 left-1/3 w-72 h-56 bg-blue-300/25 rounded-full floating-orb-slow blur-3xl" />
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,rgba(255,255,255,0.05)_2px)]" />
+      </>
+    );
+  }
+
+  if (type === "mist") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-800/95 via-emerald-700/90 to-cyan-600/85" />
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="mist-layer absolute w-full h-1/3 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent blur-2xl"
+              style={{
+                top: `${i * 30}%`,
+                animationDelay: `${i * 0.5}s`,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full floating-orb blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-emerald-500/25 rounded-full floating-orb-reverse blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(6,182,212,0.1),transparent_60%)]" />
+      </>
+    );
+  }
+}
 
 function App() {
   const [city, setCity] = useState("Delhi");
@@ -211,10 +283,8 @@ function App() {
   };
 
   return (
-    <div
-      className={`min-h-screen overflow-hidden bg-gradient-to-br ${weather.bg} text-white transition-all duration-700`}
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),transparent_35%)]" />
+    <div className="min-h-screen overflow-hidden text-white transition-all duration-700 relative">
+      <AnimatedBackground type={selectedType} />
 
       <main className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-6 flex items-center justify-between">
@@ -237,9 +307,7 @@ function App() {
 
         <section className="grid flex-1 gap-6 xl:grid-cols-[1fr_1.2fr]">
           <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-150px)]">
-            <div
-              className={`relative overflow-hidden rounded-[30px] border ${weather.card} shadow-2xl ${weather.gradientGlow} backdrop-blur-xl`}
-            >
+            <div className={`relative overflow-hidden rounded-[30px] border ${weather.card} shadow-2xl ${weather.gradientGlow} backdrop-blur-xl`}>
               <div className="absolute inset-0 bg-white/5" />
               <div className="relative p-6 sm:p-8">
                 <div className="flex flex-col gap-8">

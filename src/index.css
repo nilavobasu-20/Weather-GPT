@@ -42,3 +42,135 @@ button, input {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
+
+/* Animated Backgrounds */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(20px) translateX(-10px);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes drift {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes rain {
+  0% {
+    transform: translateY(-10vh) translateX(0);
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(10px);
+    opacity: 0;
+  }
+}
+
+@keyframes mist-move {
+  0%, 100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+}
+
+/* Floating orbs for hot weather */
+.floating-orb {
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-orb-reverse {
+  animation: float-reverse 8s ease-in-out infinite;
+}
+
+.floating-orb-slow {
+  animation: float-slow 10s ease-in-out infinite;
+}
+
+/* Rotating gradient for clear sky */
+.rotating-gradient {
+  animation: rotate 30s linear infinite;
+}
+
+/* Pulsing glow */
+.pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Drifting clouds */
+.drifting-cloud {
+  animation: drift 15s ease-in-out infinite;
+}
+
+/* Mist effect */
+.mist-layer {
+  animation: mist-move 20s ease-in-out infinite;
+}
+
+/* Rain drops */
+.rain-drop {
+  animation: rain 0.8s linear infinite;
+}
+
+/* Animate fade in */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
