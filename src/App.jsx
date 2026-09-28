@@ -14,6 +14,7 @@ import {
   Bot,
   User,
   Cloud,
+  X,
 } from "lucide-react";
 
 const weatherData = {
@@ -118,6 +119,8 @@ const presets = [
   { city: "Shimla", state: "Himachal Pradesh", type: "snowy" },
 ];
 
+const professions = ["Student", "Farmer", "Employee", "Businessman"];
+
 function AnimatedBackground({ type }) {
   if (type === "clear") {
     return (
@@ -194,14 +197,16 @@ function AnimatedBackground({ type }) {
       <>
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-blue-700/90 to-cyan-400/85" />
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(50)].map((_, i) => (
             <div
               key={i}
-              className="snowflake absolute w-2 h-2 bg-white rounded-full snow-fall blur-sm"
+              className="snowflake absolute w-2 h-2 bg-white rounded-full blur-sm"
               style={{
                 left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                opacity: Math.random() * 0.7 + 0.3,
+                top: `${Math.random() * -20}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                opacity: Math.random() * 0.6 + 0.4,
+                filter: `drop-shadow(0 0 ${Math.random() * 2}px rgba(255,255,255,0.8))`,
               }}
             />
           ))}
@@ -214,9 +219,46 @@ function AnimatedBackground({ type }) {
   }
 }
 
+function ProfessionModal({ isOpen, onSelect }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      {/* Blurred Background */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+
+      {/* Modal Content */}
+      <div className="relative bg-gradient-to-br from-white/20 to-white/10 border border-white/30 rounded-3xl p-8 shadow-2xl max-w-md w-full mx-4 backdrop-blur-xl">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2">Welcome! 👋</h2>
+          <p className="text-white/70 text-lg">Describe your profession</p>
+        </div>
+
+        <div className="space-y-4">
+          {professions.map((profession) => (
+            <button
+              key={profession}
+              onClick={() => onSelect(profession)}
+              className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-2 border-white/20 text-white font-semibold text-lg transition-all duration-300 hover:from-cyan-500/40 hover:to-blue-500/40 hover:border-white/50 hover:shadow-lg hover:scale-105 active:scale-95"
+            >
+              {profession}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-center text-white/50 text-sm mt-6">
+          This helps us provide personalized weather insights
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [city, setCity] = useState("Delhi");
   const [selectedType, setSelectedType] = useState("clear");
+  const [showProfessionModal, setShowProfessionModal] = useState(true);
+  const [selectedProfession, setSelectedProfession] = useState(null);
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -233,6 +275,11 @@ function App() {
   }, [selectedType]);
 
   const Icon = weather.icon;
+
+  const handleProfessionSelect = (profession) => {
+    setSelectedProfession(profession);
+    setShowProfessionModal(false);
+  };
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -323,6 +370,9 @@ function App() {
     <div className="min-h-screen overflow-hidden text-white transition-all duration-700 relative">
       <AnimatedBackground type={selectedType} />
 
+      {/* Profession Modal */}
+      <ProfessionModal isOpen={showProfessionModal} onSelect={handleProfessionSelect} />
+
       <main className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -336,6 +386,13 @@ function App() {
               <h1 className="text-xl font-semibold">Smart Forecast</h1>
             </div>
           </div>
+
+          {selectedProfession && (
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
+              <span className="text-sm text-white/70">Profession:</span>
+              <span className="text-sm font-semibold text-white">{selectedProfession}</span>
+            </div>
+          )}
 
           <button className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-md transition hover:bg-white/20 hover:border-white/40 hover:shadow-lg">
             Daily briefing
@@ -499,7 +556,7 @@ function App() {
                       <button
                         key={state}
                         onClick={() => handleStateSelection(state)}
-                        className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 hover:border-white/30 text-xs text-white/80 transition border border-white/10 transform hover:scale-105"
+                        className="text-left px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/25 hover:border-cyan-300/60 text-xs text-white/80 transition border border-white/15 transform hover:scale-105 font-medium hover:shadow-md"
                       >
                         {state}
                       </button>
@@ -518,7 +575,7 @@ function App() {
                     <button
                       key={cityName}
                       onClick={() => handleCitySelection(cityName)}
-                      className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 hover:border-white/30 text-xs text-white/80 transition border border-white/10 transform hover:scale-105"
+                      className="text-left px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/25 hover:border-cyan-300/60 text-xs text-white/80 transition border border-white/15 transform hover:scale-105 font-medium hover:shadow-md"
                     >
                       {cityName}
                     </button>
