@@ -13,6 +13,7 @@ import {
   Send,
   Bot,
   User,
+  Cloud,
 } from "lucide-react";
 
 const weatherData = {
@@ -20,8 +21,8 @@ const weatherData = {
     temp: 31,
     condition: "Very Hot",
     summary: "Sunny and blazing",
-    accent: "from-orange-500 via-amber-400 to-yellow-200",
-    bg: "from-orange-600/90 via-amber-500/85 to-yellow-300/80",
+    accent: "from-orange-400 via-amber-300 to-yellow-100",
+    bg: "from-orange-500/90 via-amber-400/85 to-yellow-200/80",
     card: "bg-white/15 border-white/20",
     ring: "ring-orange-300/60",
     icon: SunMedium,
@@ -64,6 +65,18 @@ const weatherData = {
     description: "Thick mist reduces visibility. Serene and cool atmosphere.",
     gradientGlow: "shadow-teal-600/30",
   },
+  snowy: {
+    temp: -2,
+    condition: "Snowing",
+    summary: "Cold and crisp",
+    accent: "from-blue-300 via-cyan-200 to-white",
+    bg: "from-blue-900/95 via-blue-700/90 to-cyan-400/85",
+    card: "bg-white/10 border-cyan-200/20",
+    ring: "ring-cyan-200/60",
+    icon: Cloud,
+    description: "Beautiful snow falling. Bundle up and enjoy the winter wonderland!",
+    gradientGlow: "shadow-blue-400/30",
+  },
 };
 
 const indianStatesAndCities = {
@@ -102,16 +115,16 @@ const presets = [
   { city: "Mumbai", state: "Maharashtra", type: "clear" },
   { city: "Delhi", state: "Delhi", type: "rain" },
   { city: "Bangalore", state: "Karnataka", type: "cloudy" },
-  { city: "Shimla", state: "Himachal Pradesh", type: "mist" },
+  { city: "Shimla", state: "Himachal Pradesh", type: "snowy" },
 ];
 
 function AnimatedBackground({ type }) {
   if (type === "clear") {
     return (
       <>
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 via-amber-500/85 to-yellow-300/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/90 via-amber-400/85 to-yellow-200/80" />
         <div className="absolute top-20 left-20 w-72 h-72 bg-orange-400/30 rounded-full floating-orb blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-400/20 rounded-full floating-orb-reverse blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-yellow-300/20 rounded-full floating-orb-reverse blur-3xl" />
         <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-amber-300/25 rounded-full floating-orb-slow blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.3),transparent_30%)]" />
       </>
@@ -175,6 +188,30 @@ function AnimatedBackground({ type }) {
       </>
     );
   }
+
+  if (type === "snowy") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-blue-700/90 to-cyan-400/85" />
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="snowflake absolute w-2 h-2 bg-white rounded-full snow-fall blur-sm"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                opacity: Math.random() * 0.7 + 0.3,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300/20 rounded-full floating-orb blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-300/15 rounded-full floating-orb-reverse blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(100,200,255,0.1),transparent_60%)]" />
+      </>
+    );
+  }
 }
 
 function App() {
@@ -226,13 +263,13 @@ function App() {
           "Stay hydrated! 💧 Consider using sunscreen and light clothing.",
           "Perfect weather for outdoor activities! 🌤️",
           "Keep an umbrella handy and stay indoors if possible. ☔",
-          "Misty weather - beautiful views but reduced visibility! 🌫️",
+          "Snowy weather - beautiful views but reduced visibility! ❄️",
         ];
         aiResponse = `The weather in ${city} is currently ${weather.condition}. Temperature is ${weather.temp}°C. ${weatherAdvice[Math.floor(Math.random() * weatherAdvice.length)]}`;
       } else if (lowerInput.includes("hello") || lowerInput.includes("hi")) {
         aiResponse = "Hello! 👋 How can I assist you with weather information today?";
       } else if (lowerInput.includes("help")) {
-        aiResponse = "I can help you with:\n• Weather forecasts for Indian cities\n• State and city information\n• Temperature and humidity details\n• Weather-based recommendations\n\nJust ask about any city in India!";
+        aiResponse = "I can help you with:\n• Weather forecasts for Indian cities\n• State and city information\n• Temperature and humidity details\n• Weather-based recommendations\n\nJust ask me anything about the weather!";
       } else {
         const randomResponses = [
           `Interesting question! Let me check the weather for ${inputValue}. Currently showing data for ${city}.`,
@@ -300,7 +337,7 @@ function App() {
             </div>
           </div>
 
-          <button className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-md transition hover:bg-white/15">
+          <button className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-md transition hover:bg-white/20 hover:border-white/40 hover:shadow-lg">
             Daily briefing
           </button>
         </header>
@@ -358,10 +395,10 @@ function App() {
                             setCity(preset.city);
                             setSelectedType(preset.type);
                           }}
-                          className={`rounded-full border px-4 py-2 text-sm transition ${
+                          className={`rounded-full border px-4 py-2 text-sm font-medium transition transform hover:scale-105 ${
                             city === preset.city
-                              ? "border-white/50 bg-white/20"
-                              : "border-white/20 bg-white/5 hover:bg-white/10"
+                              ? "border-white/50 bg-white/20 shadow-lg"
+                              : "border-white/20 bg-white/5 hover:bg-white/15 hover:border-white/40 hover:shadow-md"
                           }`}
                         >
                           {preset.city}
@@ -389,7 +426,7 @@ function App() {
                 ].map(({ label, value, icon: IconItem }) => (
                   <div
                     key={label}
-                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition hover:bg-white/10 hover:border-white/20"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
@@ -462,7 +499,7 @@ function App() {
                       <button
                         key={state}
                         onClick={() => handleStateSelection(state)}
-                        className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs text-white/80 transition"
+                        className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 hover:border-white/30 text-xs text-white/80 transition border border-white/10 transform hover:scale-105"
                       >
                         {state}
                       </button>
@@ -481,7 +518,7 @@ function App() {
                     <button
                       key={cityName}
                       onClick={() => handleCitySelection(cityName)}
-                      className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-xs text-white/80 transition"
+                      className="text-left px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 hover:border-white/30 text-xs text-white/80 transition border border-white/10 transform hover:scale-105"
                     >
                       {cityName}
                     </button>
@@ -501,11 +538,11 @@ function App() {
                     }
                   }}
                   placeholder="Ask about weather in any Indian city..."
-                  className="flex-1 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none transition focus:border-white/40"
+                  className="flex-1 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none transition focus:border-white/40 focus:bg-white/15"
                 />
                 <button
                   onClick={handleSendMessage}
-                  className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-lg transition"
+                  className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-lg hover:from-cyan-400 hover:to-blue-500 transition transform hover:scale-110"
                 >
                   <Send className="h-5 w-5 text-white" />
                 </button>
